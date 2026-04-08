@@ -1,6 +1,6 @@
 # DataFlow | Client-Side Machine Learning Dashboard
 
-[**Launch Live Dashboard**](https://www.google.com/search?q=https://)
+[**Launch Live Dashboard**](https://iamshubh-8.github.io/Data-Flow-ML-DashBoard/)
 
 DataFlow is a lightweight, browser-based tool designed to simplify the transition from raw data to a predictive model. I built this because most machine learning workflows require a specific environment setup, Jupyter notebooks, or heavy backend dependencies. This dashboard removes those barriers by handling the entire pipeline—upload, analysis, and training—directly in the browser.
 
