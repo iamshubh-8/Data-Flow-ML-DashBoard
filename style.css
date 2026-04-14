@@ -1,0 +1,484 @@
+/* =====================================================
+   Carbon Emission Predictor — Stylesheet
+   Dark theme by default, toggles to light via JS.
+   All colours are CSS variables so the switch is instant.
+===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* --- COLOUR TOKENS --- */
+:root {
+  --bg:        #0d1117;
+  --bg2:       #161b22;
+  --bg3:       #1c2330;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.14);
+
+  --text1:  #e6edf3;
+  --text2:  #8b949e;
+  --text3:  #484f58;
+
+  /* Our accent green — fits the "environment / CO₂" theme */
+  --green:     #3fb950;
+  --green-dim: rgba(63,185,80,0.12);
+  --teal:      #2ec4b6;
+  --amber:     #d29922;
+  --red:       #f85149;
+  --blue:      #58a6ff;
+
+  --font:  'Plus Jakarta Sans', sans-serif;
+  --mono:  'IBM Plex Mono', monospace;
+  --r:     10px;
+  --r-sm:  6px;
+}
+
+/* --- LIGHT THEME OVERRIDE --- */
+[data-theme="light"] {
+  --bg:        #f6f8fa;
+  --bg2:       #ffffff;
+  --bg3:       #eaeef2;
+  --border:    rgba(0,0,0,0.09);
+  --border2:   rgba(0,0,0,0.16);
+  --text1:     #1c2128;
+  --text2:     #444c56;
+  --text3:     #8c959f;
+  --green:     #1a7f37;
+  --green-dim: rgba(26,127,55,0.1);
+  --teal:      #0d9488;
+  --amber:     #9a6700;
+  --red:       #cf222e;
+  --blue:      #0969da;
+}
+
+/* --- BASE --- */
+body {
+  background: var(--bg);
+  color: var(--text1);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.65;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* --- HEADER BAR --- */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  height: 54px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text1);
+  /* The leaf SVG is coloured with our green accent */
+  color: var(--green);
+}
+.logo svg { stroke: var(--green); }
+
+/* Simple icon-button for theme toggle — no fancy animations */
+.theme-btn {
+  margin-left: auto;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+.theme-btn:hover { background: var(--border2); }
+
+/* --- TAB NAVIGATION --- */
+.nav {
+  display: flex;
+  gap: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+  padding: 0 16px;
+}
+
+.nav-tab {
+  padding: 12px 16px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.nav-tab:hover  { color: var(--text2); }
+.nav-tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* --- MAIN CONTENT AREA --- */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Sections are hidden by default; .active makes them visible */
+.section        { display: none; }
+.section.active { display: block; animation: fadeUp 0.22s ease; }
+.hidden         { display: none !important; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- CARD --- */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: border-color 0.15s;
+}
+.card:hover { border-color: var(--border2); }
+
+.card-title {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--text1);
+  margin-bottom: 14px;
+}
+
+/* Helper text under inputs / selects */
+.hint { font-size: 12px; color: var(--text2); margin-bottom: 14px; line-height: 1.5; }
+
+/* --- UPLOAD ZONE --- */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: var(--r);
+  padding: 52px 24px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  background: var(--bg3);
+  transition: border-color 0.2s, background 0.2s;
+}
+.upload-zone:hover, .upload-zone.drag {
+  border-color: var(--green);
+  background: var(--green-dim);
+}
+.upload-icon  { font-size: 32px; margin-bottom: 10px; }
+.upload-title { font-weight: 600; font-size: 14px; color: var(--text1); margin-bottom: 4px; }
+.upload-sub   { font-size: 12px; color: var(--text3); }
+
+/* The actual <input type="file"> is invisible but covers the whole zone */
+.upload-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+/* --- SUCCESS BANNER --- */
+.success-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--green-dim);
+  border: 1px solid rgba(63,185,80,0.25);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+
+/* --- STAT CARDS ROW --- */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+}
+.stat-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 6px; }
+.stat-val   { font-family: var(--mono); font-size: 22px; font-weight: 600; color: var(--text1); line-height: 1; }
+.stat-sub   { font-size: 11px; color: var(--text2); margin-top: 4px; }
+.stat-val.green { color: var(--green); }
+.stat-val.blue  { color: var(--blue); }
+.stat-val.amber { color: var(--amber); }
+
+/* --- TABLE --- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r-sm); }
+table       { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { background: var(--bg3); padding: 9px 12px; color: var(--text3); font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; border-bottom: 1px solid var(--border); text-align: left; }
+td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text2); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); color: var(--text1); }
+
+/* --- BUTTONS --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--r-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  line-height: 1;
+}
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(63,185,80,0.3);
+}
+.btn-primary:hover:not(:disabled) { filter: brightness(1.1); transform: translateY(-1px); }
+.btn-secondary { background: var(--bg3); color: var(--text2); border-color: var(--border2); }
+.btn-secondary:hover:not(:disabled) { color: var(--text1); border-color: var(--green); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+/* --- FEATURE CHECKBOXES --- */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+
+.feat-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 11px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  font-size: 12.5px;
+  color: var(--text2);
+}
+.feat-check:hover { border-color: var(--green); color: var(--text1); }
+
+/* Custom checkbox styling */
+.feat-check input[type=checkbox] {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  background: var(--bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  display: grid;
+  place-content: center;
+  transition: border-color 0.15s;
+}
+.feat-check input[type=checkbox]:checked { border-color: var(--green); background: var(--green); }
+.feat-check input[type=checkbox]::before {
+  content: "";
+  width: 8px; height: 8px;
+  transform: scale(0);
+  transition: 0.1s transform;
+  box-shadow: inset 1em 1em #fff;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+}
+.feat-check input[type=checkbox]:checked::before { transform: scale(1); }
+
+/* Badge showing if a column is numeric or categorical */
+.col-badge {
+  margin-left: auto;
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.col-badge.num { background: var(--green-dim); color: var(--green); }
+.col-badge.cat { background: rgba(88,166,255,0.1); color: var(--blue); }
+
+/* --- MODEL SELECTION CARDS --- */
+.model-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.model-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  cursor: pointer;
+  background: var(--bg3);
+  transition: all 0.15s;
+}
+.model-card:hover   { border-color: var(--border2); transform: translateY(-1px); }
+.model-card.active  { border-color: var(--green); background: var(--green-dim); }
+
+.model-name { font-weight: 600; font-size: 13px; color: var(--text1); margin-bottom: 4px; }
+.model-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+/* --- TRAIN/TEST SPLIT SLIDER --- */
+.split-row { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.split-row input[type=range] { flex: 1; accent-color: var(--green); cursor: pointer; }
+.mono { font-family: var(--mono); font-size: 12.5px; color: var(--text1); white-space: nowrap; }
+
+/* --- TRAINING LOG --- */
+.log-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  height: 160px;
+  overflow-y: auto;
+  line-height: 1.9;
+  color: var(--text2);
+}
+.log-ok   { color: var(--green); }
+.log-info { color: var(--text2); }
+.log-warn { color: var(--amber); }
+.log-ts   { color: var(--text3); margin-right: 6px; }
+
+/* --- PROGRESS BAR --- */
+.progress-bar  { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s ease; }
+
+/* --- FEATURE DISTRIBUTIONS GRID (Explore tab) --- */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* Each mini histogram block */
+.mini-hist {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px;
+}
+.mini-hist-title { font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* The bar chart inside mini-hist — bars sit at the bottom via flexbox align-items:flex-end */
+.bar-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 50px;
+}
+.bar-col { flex: 1; border-radius: 2px 2px 0 0; min-height: 2px; background: var(--teal); opacity: 0.75; }
+
+.mini-range { display: flex; justify-content: space-between; font-size: 9.5px; color: var(--text3); margin-top: 4px; font-family: var(--mono); }
+
+/* --- FEATURE IMPORTANCE BARS (Results tab) --- */
+.fi-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.fi-row:last-child { border-bottom: none; }
+.fi-name { font-family: var(--mono); font-size: 11.5px; color: var(--text2); min-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fi-bar-wrap { flex: 1; height: 5px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.fi-bar { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.5s ease; }
+.fi-val { font-family: var(--mono); font-size: 11px; color: var(--text3); min-width: 50px; text-align: right; }
+
+/* --- 2-COLUMN GRID for charts side by side --- */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .model-grid { grid-template-columns: 1fr; } }
+
+/* --- EMPTY STATE --- */
+.empty-state {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--text3);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  font-size: 14px;
+}
+
+/* --- ERROR TOAST --- */
+.error-toast {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--red);
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: var(--r-sm);
+  font-size: 12.5px;
+  font-family: var(--mono);
+  max-width: 320px;
+  z-index: 9999;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* --- TARGET COLUMN SELECTOR --- */
+.target-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.target-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text2);
+  white-space: nowrap;
+}
+/* The <select> dropdown for picking the target column */
+select#targetSel {
+  background: var(--bg3);
+  color: var(--text1);
+  border: 1px solid var(--border2);
+  border-radius: var(--r-sm);
+  padding: 7px 11px;
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  cursor: pointer;
+  min-width: 200px;
+  transition: border-color 0.15s;
+}
+select#targetSel:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-dim); }
+select#targetSel option { background: var(--bg3); }
+
+/* --- MISC HELPERS --- */
+.flex-end { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.muted    { color: var(--text3); }
